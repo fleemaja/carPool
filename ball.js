@@ -24,6 +24,19 @@ class Ball {
     text(number, 0, 0)
   }
 
+  drawStripe(number, color) {
+    fill(COLORS.white)
+    ellipse(0, 0, this.radius)
+    fill(color)
+    rectMode(CENTER);
+    rect(0, 0, this.radius, this.radius/2, this.radius/(2*PI))
+    fill(COLORS.white)
+    ellipse(0, 0, this.radius/2)
+    fill(COLORS.black)
+    textAlign(CENTER, CENTER);
+    text(number, 0, 0)
+  }
+
   displaySolidBall(number) {
     switch (number) {
       case 1: this.drawSolid(number, COLORS.yellow); break;
@@ -34,13 +47,21 @@ class Ball {
       case 6: this.drawSolid(number, COLORS.green); break;
       case 7: this.drawSolid(number, COLORS.maroon); break;
       case 8: this.drawSolid(number, COLORS.black); break;
-      default:
-        return
+      default: break;
     }
   }
 
   displayStripedBall(number) {
-    console.log("STRIPED BALL")
+    switch (number) {
+      case 9: this.drawStripe(number, COLORS.yellow); break;
+      case 10: this.drawStripe(number, COLORS.blue); break;
+      case 11: this.drawStripe(number, COLORS.red); break;
+      case 12: this.drawStripe(number, COLORS.purple); break;
+      case 13: this.drawStripe(number, COLORS.orange); break;
+      case 14: this.drawStripe(number, COLORS.green); break;
+      case 15: this.drawStripe(number, COLORS.maroon); break;
+      default: break;
+    }
   }
 
   displayBall(number) {

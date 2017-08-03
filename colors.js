@@ -3,7 +3,7 @@ const COLORS = {
   "maroon": [128, 0, 0],
   "orange": [255, 165, 0],
   "yellow": [255, 255, 0],
-  "green": [0, 150, 0],
+  "green": [0, 90, 0],
   "purple": [85, 26, 139],
   "blue": [0, 0, 255],
   "white": 255,

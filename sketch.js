@@ -27,7 +27,7 @@ function setup() {
   addWalls()
 
   car = new Car()
-  for (let i = 0; i < 9; i++) {
+  for (let i = 1; i <= 15; i++) {
     balls.push(new Ball(i))
   }
 }
