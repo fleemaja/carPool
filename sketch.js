@@ -12,6 +12,7 @@ let car;
 
 let balls = [];
 let walls = [];
+let rack = [];
 let pockets = [];
 
 let visibleWallOffset;
@@ -37,9 +38,8 @@ function setup() {
   addPockets();
 
   car = new Car()
-  for (let i = 1; i <= 15; i++) {
-    balls.push(new Ball(i))
-  }
+
+  setupRackOfBalls()
 }
 
 function collision(event) {
@@ -55,6 +55,14 @@ function collision(event) {
   }
 }
 
+function setupRackOfBalls() {
+  rackEmUp()
+
+  setTimeout(function() {
+    removeRack();
+  }, 1000);
+}
+
 function removeBall(body) {
   const bodyId = body.id;
   World.remove(world, body);
@@ -62,6 +70,30 @@ function removeBall(body) {
     if (bodyId == balls[i].id) {
       balls.splice(i, 1);
     }
+  }
+}
+
+function rackEmUp() {
+  const wallThickness = 25;
+  const rackWidth = 0.45 * height;
+  const centerX = 0.75 * width;
+  const centerY = 0.5 * height;
+  const xOffset = 0.866 * rackWidth/2;
+
+  topWall = new RackWall(centerX - xOffset, centerY - rackWidth/4, wallThickness, rackWidth, PI/3);
+  bottomWall = new RackWall(centerX - xOffset, centerY + rackWidth/4, wallThickness, rackWidth, -PI/3);
+  leftWall = new RackWall(centerX, centerY, wallThickness, rackWidth, 0);
+  rack.push(topWall); rack.push(bottomWall); rack.push(leftWall);
+
+  for (let i = 1; i <= 15; i++) {
+    balls.push(new Ball(i, centerX - xOffset/2, centerY));
+  }
+}
+
+function removeRack() {
+  for (let i = rack.length - 1; i >= 0; i--) {
+    World.remove(world, rack[i].body);
+    rack.splice(i, 1);
   }
 }
 
@@ -92,7 +124,11 @@ function draw() {
   car.render()
   car.update()
 
-  balls.forEach(b => b.render())
+  if (balls.length > 0) {
+    balls.forEach(b => b.render())
+  } else {
+    setupRackOfBalls();
+  }
 
 }
 
@@ -100,6 +136,7 @@ function drawPoolTable() {
   background(COLORS.blueGreen);
   walls.forEach(w => w.render());
   pockets.forEach(p => p.render());
+  rack.forEach(r => r.render());
 }
 
 function addWalls() {
