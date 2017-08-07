@@ -2,6 +2,7 @@ const Engine = Matter.Engine;
 const World = Matter.World;
 const Bodies = Matter.Bodies;
 const Body = Matter.Body;
+const Events = Matter.Events;
 
 let engine;
 let world;
@@ -29,12 +30,38 @@ function setup() {
   // disable matter.js gravity (top-down game)
   engine.world.gravity.y = 0;
 
+  //collision detection (pockets should make balls disappear)
+  Events.on(engine, 'collisionStart', collision);
+
   addWalls();
   addPockets();
 
   car = new Car()
   for (let i = 1; i <= 15; i++) {
     balls.push(new Ball(i))
+  }
+}
+
+function collision(event) {
+  var pairs = event.pairs;
+  for (let i = 0; i < pairs.length; i++) {
+    const labelA = pairs[i].bodyA.label;
+    const labelB = pairs[i].bodyB.label;
+    if (labelA == 'pocket' && labelB == 'ball') {
+      removeBall(pairs[i].bodyB)
+    } else if (labelA == 'ball' && labelB == 'pocket') {
+      removeBall(pairs[i].bodyA);
+    }
+  }
+}
+
+function removeBall(body) {
+  const bodyId = body.id;
+  World.remove(world, body);
+  for (let i = balls.length - 1; i >= 0; i--) {
+    if (bodyId == balls[i].id) {
+      balls.splice(i, 1);
+    }
   }
 }
 

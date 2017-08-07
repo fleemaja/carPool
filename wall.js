@@ -7,6 +7,7 @@ class Wall {
       isStatic: true
     }
     this.body = Bodies.rectangle(x, y, w, h, options);
+    this.body.label = "wall";
     this.x = x;
     this.y = y;
     this.w = w;

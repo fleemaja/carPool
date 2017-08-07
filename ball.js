@@ -11,6 +11,8 @@ class Ball {
     this.body = Bodies.circle(
       this.position.x, this.position.y, this.radius/2, options
     )
+    this.body.label = "ball";
+    this.id = this.body.id;
     World.add(world, this.body)
   }
 

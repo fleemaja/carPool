@@ -11,6 +11,7 @@ class Car {
     this.body = Bodies.rectangle(
       this.position.x, this.position.y, this.length, this.width, options
     )
+    this.body.label = "car";
     World.add(world, this.body)
   }
 

@@ -5,6 +5,7 @@ class Pocket {
     this.radius = r;
     const options = { isStatic: true }
     this.body = Bodies.circle(x, y, r/2, options);
+    this.body.label = "pocket";
     World.add(world, this.body);
   }
 
