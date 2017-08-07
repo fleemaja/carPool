@@ -30,7 +30,7 @@ class Car {
   }
 
   accelerate() {
-    var force = p5.Vector.fromAngle(this.body.angle)
+    const force = p5.Vector.fromAngle(this.body.angle)
     force.mult(0.02);
     Body.applyForce(this.body, this.body.position, force)
   }
@@ -41,11 +41,12 @@ class Car {
   }
 
   render() {
-    var angle = this.body.angle;
+    const angle = this.body.angle;
     push()
     rectMode(CENTER)
     translate(this.body.position.x, this.body.position.y)
     rotate(angle);
+    stroke(0);
     // tires
     fill(COLORS.lightBlack)
     ellipse(this.length/3, -this.width/2, this.width/4, this.width/8)
@@ -60,7 +61,7 @@ class Car {
     fill(this.color);
     rect(-this.length/12, 0, 0.45 * this.length, 0.6 * this.width, 5);
     // headlights
-    fill(255, 255, 200)
+    fill(255, 255, 200);
     ellipse(this.length/2, -this.width/3, this.width/8, this.width/4);
     ellipse(this.length/2, this.width/3, this.width/8, this.width/4);
     pop()
@@ -72,7 +73,7 @@ class Car {
       push()
       translate(x, y)
       rotate(angle);
-      fill(COLORS.lightBlack, i);
+      fill(COLORS.black, i);
       ellipse(-carWidth, 0, exaustClouds - i + random(-10, 10), exaustClouds - i + random(-3, 3));
       pop()
     })

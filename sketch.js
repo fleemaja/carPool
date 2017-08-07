@@ -10,13 +10,18 @@ const exaustClouds = 25;
 let car;
 
 let balls = [];
+let walls = [];
+let pockets = [];
 
+let visibleWallOffset;
 
 function setup() {
   const w = window.innerWidth
   // keep table dimensions nice
   const h = min(window.innerHeight, w * 0.61);
-  createCanvas(w, h)
+  createCanvas(w, h);
+
+  visibleWallOffset = width/32;
 
   engine = Engine.create();
   world = engine.world;
@@ -24,7 +29,8 @@ function setup() {
   // disable matter.js gravity (top-down game)
   engine.world.gravity.y = 0;
 
-  addWalls()
+  addWalls();
+  addPockets();
 
   car = new Car()
   for (let i = 1; i <= 15; i++) {
@@ -65,15 +71,35 @@ function draw() {
 
 function drawPoolTable() {
   background(COLORS.blueGreen);
+  walls.forEach(w => w.render());
+  pockets.forEach(p => p.render());
 }
 
 function addWalls() {
   const wallThickness = 500;
   const wt2 = wallThickness/2;
 
-  bottomWall = new Wall(width/2, height + wt2, width, wallThickness, 0)
-  topWall = new Wall(width/2, -wt2, width, wallThickness, 0)
+  bottomWall = new Wall(width/2, height + wt2 - visibleWallOffset, width, wallThickness, 0)
+  topWall = new Wall(width/2, -wt2 + visibleWallOffset, width, wallThickness, 0)
 
-  leftWall = new Wall(-wt2, height/2, height, wallThickness, PI/2)
-  rightWall = new Wall(width + wt2, height/2, height, wallThickness, PI/2)
+  leftWall = new Wall(-wt2 + visibleWallOffset, height/2, height, wallThickness, PI/2)
+  rightWall = new Wall(width + wt2 - visibleWallOffset, height/2, height, wallThickness, PI/2)
+
+  walls.push(topWall); walls.push(bottomWall);
+  walls.push(leftWall); walls.push(rightWall);
+}
+
+function addPockets() {
+  const radius = width/24,
+        topY = visibleWallOffset,
+        bottomY = height - visibleWallOffset,
+        leftX = visibleWallOffset,
+        middleX = width/2,
+        rightX = width - visibleWallOffset;
+
+  [leftX, middleX, rightX].forEach((x) => {
+    [topY, bottomY].forEach((y) => {
+      pockets.push(new Pocket(x, y, radius));
+    })
+  })
 }

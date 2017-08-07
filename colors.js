@@ -1,3 +1,4 @@
+// labelled rgb values
 const COLORS = {
   "red": [255, 0, 0],
   "maroon": [128, 0, 0],
@@ -9,5 +10,6 @@ const COLORS = {
   "white": 255,
   "black": 0,
   "lightBlack": 54,
-  "blueGreen": [13, 186, 148]
+  "blueGreen": [13, 186, 148],
+  "tableWood": [73, 49, 28]
 }
