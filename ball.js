@@ -1,6 +1,6 @@
 class Ball {
   constructor(number, x, y) {
-    this.position = createVector(x + random(-5, 5), y + random(-5, 5))
+    this.position = createVector(x + random(-5, 5), y + random(-1, 1))
     this.radius = width/32
     this.number = number
     const options = {
@@ -14,6 +14,11 @@ class Ball {
     this.body.label = "ball";
     this.id = this.body.id;
     World.add(world, this.body)
+  }
+
+  update() {
+    this.position.x = this.body.position.x;
+    this.position.y = this.body.position.y;
   }
 
   drawSolid(number, color) {

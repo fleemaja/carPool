@@ -11,6 +11,6 @@ const COLORS = {
   "black": 0,
   "lightBlack": 54,
   "blueGreen": [13, 186, 148],
-  "tableWood": [73, 49, 28],
+  "tableWood": [170,114,67],
   "rackWood": [210, 180, 140]
 }

@@ -9,6 +9,7 @@ let world;
 
 const exaustClouds = 25;
 let car;
+let computerCar;
 
 let balls = [];
 let walls = [];
@@ -17,10 +18,16 @@ let pockets = [];
 
 let visibleWallOffset;
 
+let ballComputerIsFocusedOn;
+let computersBallType = 'solid';
+
+let displayValue;
+
+
 function setup() {
-  const w = window.innerWidth
+  const h = min(window.innerHeight, window.innerWidth / 2);
   // keep table dimensions nice
-  const h = min(window.innerHeight, w * 0.61);
+  const w = min(window.innerWidth, h * 2);
   createCanvas(w, h);
 
   visibleWallOffset = width/32;
@@ -37,9 +44,13 @@ function setup() {
   addWalls();
   addPockets();
 
-  car = new Car()
+  car = new Car(isPlayer = true)
 
-  setupRackOfBalls()
+  // computer always accelerates (TODO: AI)
+  computerCar = new Car(isPlayer = false);
+  computerCar.accelerating(true);
+
+  setupRackOfBalls();
 }
 
 function collision(event) {
@@ -74,7 +85,7 @@ function removeBall(body) {
 }
 
 function rackEmUp() {
-  const wallThickness = 25;
+  const wallThickness = width/48;
   const rackWidth = 0.45 * height;
   const centerX = 0.75 * width;
   const centerY = 0.5 * height;
@@ -107,10 +118,14 @@ function keyReleased() {
 
 function keyPressed() {
   if (keyCode == RIGHT_ARROW) {
-    car.rotate(PI/72)
+    car.rotate(PI/128)
   } else if (keyCode == LEFT_ARROW) {
-    car.rotate(-PI/72)
+    car.rotate(-PI/128)
   } else if (keyCode == UP_ARROW) {
+    car.accelerationDirection = 'forwards';
+    car.accelerating(true)
+  } else if (keyCode == DOWN_ARROW) {
+    car.accelerationDirection = 'backwards';
     car.accelerating(true)
   }
 }
@@ -125,11 +140,47 @@ function draw() {
   car.update()
 
   if (balls.length > 0) {
-    balls.forEach(b => b.render())
+    balls.forEach(b => {
+      b.update()
+      b.render()
+    })
   } else {
     setupRackOfBalls();
   }
 
+  computerCar.render()
+  computerCar.update()
+  closestBall = findClosestBall(computersBallType);
+  computerCar.pointTowardsBall(closestBall);
+  computerCar.checkIfNeedToGoInReverse();
+}
+
+function findClosestBall(ballType) {
+  let closestDistance = Number.MAX_SAFE_INTEGER;
+  let closestBall = null;
+  const firstBall = ballType === 'solid' ? 1 : 9;
+  const lastBall = ballType === 'solid' ? 7 : 15;
+
+  let currentBall; let currentDistance;
+  // array indexing so subtract one
+  for (let i = firstBall - 1; i <= lastBall - 1; i++) {
+    currentBallArray = balls.filter(b => b.number === i);
+    if (currentBallArray.length > 0) {
+      currentBall = currentBallArray[0];
+      currentDistance = distanceBetween(computerCar, currentBall);
+      if (currentDistance < closestDistance) {
+        closestDistance = currentDistance;
+        closestBall = currentBall;
+      }
+    }
+  }
+  return closestBall;
+}
+
+function distanceBetween(object1, object2) {
+  const a2 = Math.pow(object1.position.x - object2.position.x, 2);
+  const b2 = Math.pow(object1.position.y - object2.position.y, 2);
+  return a2 + b2;
 }
 
 function drawPoolTable() {
