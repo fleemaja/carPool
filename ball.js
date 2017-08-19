@@ -21,6 +21,11 @@ class Ball {
     this.position.y = this.body.position.y;
   }
 
+  ballType() {
+    if (this.number === 8) { return "eight" };
+    return this.number < 8 ? "solid" : "stripe";
+  }
+
   drawSolid(number, color) {
     fill(color)
     ellipse(0, 0, this.radius)

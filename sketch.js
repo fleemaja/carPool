@@ -8,6 +8,7 @@ let engine;
 let world;
 
 const exaustClouds = 25;
+
 let car;
 let computerCar;
 
@@ -21,8 +22,25 @@ let visibleWallOffset;
 let ballComputerIsFocusedOn;
 let computersBallType = 'solid';
 
-let displayValue;
+let replayButton;
 
+function resetGame() {
+  replayButton.hide();
+
+  // remove previous balls and setup new balls
+  balls.forEach(b => {
+    World.remove(world, b.body);
+  })
+  balls = [];
+  setupRackOfBalls();
+
+  // remove previous cars and setup new cars
+  World.remove(world, car.body);
+  World.remove(world, computerCar.body);
+  car = new Car(isPlayer = true)
+  computerCar = new Car(isPlayer = false);
+  computerCar.accelerating(true);
+}
 
 function setup() {
   const h = min(window.innerHeight, window.innerWidth / 2);
@@ -51,6 +69,11 @@ function setup() {
   computerCar.accelerating(true);
 
   setupRackOfBalls();
+
+  replayButton = createButton("Play Again?");
+  replayButton.addClass('replay-button');
+  replayButton.hide();
+  replayButton.mousePressed(resetGame);
 }
 
 function collision(event) {
@@ -131,28 +154,57 @@ function keyPressed() {
 }
 
 function draw() {
+  drawGame();
+  let gameOver = isGameOver()
+  if (!gameOver) { updateGame() };
+}
 
-  drawPoolTable()
-
+function updateGame() {
   Engine.update(engine)
-
-  car.render()
   car.update()
+  balls.forEach(b => b.update())
 
-  if (balls.length > 0) {
-    balls.forEach(b => {
-      b.update()
-      b.render()
-    })
-  } else {
-    setupRackOfBalls();
-  }
-
-  computerCar.render()
   computerCar.update()
   closestBall = findClosestBall(computersBallType);
-  computerCar.pointTowardsBall(closestBall);
+  if (closestBall) {
+    computerCar.pointTowardsBall(closestBall);
+  }
   computerCar.checkIfNeedToGoInReverse();
+}
+
+function drawGame() {
+  drawPoolTable()
+  car.render()
+  balls.length > 0 ? balls.forEach(b => b.render()) : setupRackOfBalls();
+  computerCar.render()
+}
+
+function isGameOver() {
+  let gameOver = false;
+  const stripes = balls.filter(b => b.ballType() === 'stripe').length;
+  const solids = balls.filter(b => b.ballType() === 'solid').length;
+  if (stripes === 0) {
+    gameOver = true;
+    this.gameOver(winner = "stripe");
+  } else if (solids === 0) {
+    gameOver = true;
+    this.gameOver(winner = "solid");
+  }
+  return gameOver;
+}
+
+function gameOver(winner) {
+  replayButton.show();
+  const winningPlayer = computersBallType === winner ? 'Computer' : 'Player';
+  push();
+  fill(0, 155);
+  rect(0, 0, width, height);
+  textAlign(CENTER, CENTER);
+  textSize(32);
+  fill(255);
+  noStroke();
+  text(`All ${winner}s sunk! ${winningPlayer} wins!`, width/2, height/3);
+  pop();
 }
 
 function findClosestBall(ballType) {

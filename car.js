@@ -9,7 +9,7 @@ class Car {
     this.rotation = 0
     this.color = COLORS.white
     this.history = [];
-    const options = { density: 1, friction: 0.2, mass: 200 }
+    const options = { density: 1, friction: 0.2, mass: 125 }
     this.body = Bodies.rectangle(
       this.position.x, this.position.y, this.length, this.width, options
     )
@@ -71,14 +71,16 @@ class Car {
     const epsilon = 0.005;
     const x = this.position.x;
     const y = this.position.y;
-    const offset = (0.87 * this.length) + visibleWallOffset;
+    // only reverse near the edges/pockets
+    // (width/144 is the pocket collision radius)
+    const offset = this.length + visibleWallOffset + width/144;
 
-    if (Math.abs(this.velocity.x) < epsilon || Math.abs(this.velocity.y) < epsilon) {
-      if (x > width - offset ||
-          x < offset ||
-          y > height - offset ||
-          y < offset) {
-          this.accelerateBackwards()
+    if (x > width - offset ||
+        x < offset ||
+        y > height - offset ||
+        y < offset) {
+      if (Math.abs(this.velocity.x) < epsilon || Math.abs(this.velocity.y) < epsilon) {
+        this.accelerateBackwards()
       }
     }
   }
