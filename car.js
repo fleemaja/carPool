@@ -118,8 +118,11 @@ class Car {
     rect(-this.length/12, 0, 0.45 * this.length, 0.6 * this.width, 5);
     // headlights
     fill(255, 255, 200);
-    ellipse(this.length/2, -this.width/3, this.width/8, this.width/4);
-    ellipse(this.length/2, this.width/3, this.width/8, this.width/4);
+    ellipse(this.length * 0.45, -this.width/3, this.width/8, this.width/4);
+    ellipse(this.length * 0.45, this.width/3, this.width/8, this.width/4);
+    this.accelerationDirection === 'backwards' ? fill(255, 0, 0) : fill(255, 0, 0, 50);
+    ellipse(-this.length * 0.45, -this.width/3, this.width/8, this.width/8);
+    ellipse(-this.length * 0.45, this.width/3, this.width/8, this.width/8);
     pop()
     push()
     noStroke();

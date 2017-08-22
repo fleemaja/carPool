@@ -119,7 +119,7 @@ function rackEmUp() {
   leftWall = new RackWall(centerX, centerY, wallThickness, rackWidth, 0);
   rack.push(topWall); rack.push(bottomWall); rack.push(leftWall);
 
-  for (let i = 1; i <= 15; i++) {
+  for (let i = 1; i <= 9; i++) {
     balls.push(new Ball(i, centerX - xOffset/2, centerY));
   }
 }
@@ -200,10 +200,11 @@ function gameOver(winner) {
   fill(0, 155);
   rect(0, 0, width, height);
   textAlign(CENTER, CENTER);
-  textSize(32);
+  const size = width > 600 ? 32 : 24;
+  textSize(size);
   fill(255);
   noStroke();
-  text(`All ${winner}s sunk! ${winningPlayer} wins!`, width/2, height/3);
+  text(`All ${winner}s sunk! ${winningPlayer} wins!`, width/2, height/4);
   pop();
 }
 

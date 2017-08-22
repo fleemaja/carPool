@@ -18,12 +18,20 @@
       .replay-button {
         font-size: 24px;
         color: #333;
-        background: white;
         width: 200px;
-        height: 100px;
+        height: 80px;
+        background: white;
         border-radius: 5px;
         border: none;
         z-index: 999999999;
+        cursor: pointer;
+      }
+
+      @media (max-width: 600px) {
+        .replay-button {
+          font-size: 16px;
+          height: 60px;
+        }
       }
     </style>
   </head>
