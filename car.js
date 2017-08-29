@@ -5,6 +5,7 @@ class Car {
     this.width = width/36
     this.length = this.width * 2
     this.isAccelerating = false
+    this.isBoosting = false
     this.accelerationDirection = 'forwards'
     this.rotation = 0
     this.color = COLORS.white
@@ -39,7 +40,8 @@ class Car {
 
   accelerate(direction) {
     const force = p5.Vector.fromAngle(this.body.angle)
-    direction === 'forwards' ? force.mult(0.02) : force.mult(-0.02);
+    const fVal = this.isBoosting ? 0.10 : 0.02;
+    direction === 'forwards' ? force.mult(fVal) : force.mult(-fVal);
     Body.applyForce(this.body, this.body.position, force)
   }
 
@@ -48,7 +50,16 @@ class Car {
     Body.setAngularVelocity(this.body, rotation)
   }
 
-  // for computer player. weird way to find right rotation...
+  boost() {
+    if (this.accelerationDirection === 'forwards') {
+      this.isBoosting = true;
+      setTimeout(function() {
+        this.isBoosting = false;
+      }.bind(this), 1000);
+    }
+  }
+
+  // for computer player. weird way to find correct way to rotate...
   pointTowardsBall(ball) {
 
     const leftVelocity = this.velocity.copy();
@@ -62,8 +73,13 @@ class Car {
     const rightAdjustedPosition = createVector(this.position.x + rightRotatedVelocity.x, this.position.y + rightRotatedVelocity.y);
     const desiredRight = p5.Vector.sub(ball.position, rightAdjustedPosition);
 
+    // boost to faraway ball
+    if (desiredLeft.mag() > 150) { this.boost() };
+
     const steerMag = desiredLeft.mag() - desiredRight.mag();
-    let rotation = map(steerMag, -0.5, 0.5, -PI/72, PI/72);
+    // switch desired steering rotation when reversing
+    const dir = this.accelerationDirection === 'forwards' ? 1 : -1;
+    let rotation = map(steerMag, -0.5, 0.5, -dir * PI/128, dir * PI/128);
     this.rotate(rotation);
   }
 
@@ -87,6 +103,7 @@ class Car {
 
   accelerateBackwards() {
     this.accelerationDirection = 'backwards';
+    this.isBoosting = false;
     setTimeout(function() {
       this.accelerationDirection = 'forwards'
     }.bind(this), 1000);
@@ -120,9 +137,18 @@ class Car {
     fill(255, 255, 200);
     ellipse(this.length * 0.45, -this.width/3, this.width/8, this.width/4);
     ellipse(this.length * 0.45, this.width/3, this.width/8, this.width/4);
-    this.accelerationDirection === 'backwards' ? fill(255, 0, 0) : fill(255, 0, 0, 50);
+    const reversing = this.accelerationDirection === 'backwards' &&  this.isAccelerating;
+    // bright lights on the back of car when reversing
+    reversing ? fill(COLORS.red) : fill(COLORS.dimRed);
+    noStroke();
     ellipse(-this.length * 0.45, -this.width/3, this.width/8, this.width/8);
     ellipse(-this.length * 0.45, this.width/3, this.width/8, this.width/8);
+    // if boosting draw flames
+    if (this.isBoosting) {
+      fill(255, random(0, 255), 0);
+      // x1, y1, x2, y2, x3, y3
+      triangle(-this.length*0.5, -this.width/8, -this.length*0.5, this.width/8, -this.length, random(-this.width*0.15, this.width*0.15))
+    }
     pop()
     push()
     noStroke();

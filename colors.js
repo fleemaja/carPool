@@ -1,6 +1,7 @@
 // labelled rgb values
 const COLORS = {
   "red": [255, 0, 0],
+  "dimRed": [255, 0, 0, 75],
   "maroon": [128, 0, 0],
   "orange": [255, 165, 0],
   "yellow": [255, 255, 0],

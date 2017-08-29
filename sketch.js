@@ -132,7 +132,7 @@ function removeRack() {
 }
 
 function keyReleased() {
-  if (keyCode == UP_ARROW) {
+  if (keyCode == UP_ARROW || keyCode == DOWN_ARROW) {
     car.accelerating(false)
   } else if (keyCode == RIGHT_ARROW || keyCode == LEFT_ARROW) {
     car.rotate(0)
@@ -149,7 +149,10 @@ function keyPressed() {
     car.accelerating(true)
   } else if (keyCode == DOWN_ARROW) {
     car.accelerationDirection = 'backwards';
+    car.isBoosting = false;
     car.accelerating(true)
+  } else if (keyCode == 32) {
+    car.boost();
   }
 }
 
