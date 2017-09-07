@@ -77,9 +77,8 @@ class Car {
     if (desiredLeft.mag() > 150) { this.boost() };
 
     const steerMag = desiredLeft.mag() - desiredRight.mag();
-    // switch desired steering rotation when reversing
     const dir = this.accelerationDirection === 'forwards' ? 1 : -1;
-    let rotation = map(steerMag, -0.5, 0.5, -dir * PI/128, dir * PI/128);
+    let rotation = map(steerMag, -0.5, 0.5, -dir * PI/72, dir * PI/72);
     this.rotate(rotation);
   }
 

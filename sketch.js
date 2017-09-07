@@ -24,6 +24,9 @@ let computersBallType = 'solid';
 
 let replayButton;
 
+let countdownMode = true;
+let countdownText;
+
 function resetGame() {
   replayButton.hide();
 
@@ -33,6 +36,8 @@ function resetGame() {
   })
   balls = [];
   setupRackOfBalls();
+
+  updateCountdownOverlay();
 
   // remove previous cars and setup new cars
   World.remove(world, car.body);
@@ -70,6 +75,8 @@ function setup() {
 
   setupRackOfBalls();
 
+  updateCountdownOverlay();
+
   replayButton = createButton("Play Again?");
   replayButton.addClass('replay-button');
   replayButton.hide();
@@ -90,11 +97,40 @@ function collision(event) {
 }
 
 function setupRackOfBalls() {
-  rackEmUp()
+  rackEmUp();
 
   setTimeout(function() {
     removeRack();
   }, 1000);
+}
+
+function updateCountdownOverlay(msgIdx = 0) {
+  let msgs = ['3', '2', '1', 'GO!'];
+  countdownText = msgs[msgIdx];
+  countdownMode = true;
+  if (msgIdx === msgs.length) {
+    countdownMode = false;
+  } else {
+    setTimeout(function() {
+      updateCountdownOverlay(msgIdx + 1)
+    }, 1000);
+  }
+}
+
+function drawCountdownOverlay() {
+  push();
+  // draw grayed out background
+  fill(0, 155);
+  rect(0, 0, width, height);
+  // text settings
+  textAlign(CENTER, CENTER);
+  const size = width > 600 ? 256 : 128;
+  textSize(size);
+  fill(255);
+  noStroke();
+  // countdownText is a global variable (can be '3', '2', '1', or 'GO!')
+  text(countdownText, width/2, height/2);
+  pop();
 }
 
 function removeBall(body) {
@@ -141,9 +177,9 @@ function keyReleased() {
 
 function keyPressed() {
   if (keyCode == RIGHT_ARROW) {
-    car.rotate(PI/128)
+    car.rotate(PI/72)
   } else if (keyCode == LEFT_ARROW) {
-    car.rotate(-PI/128)
+    car.rotate(-PI/72)
   } else if (keyCode == UP_ARROW) {
     car.accelerationDirection = 'forwards';
     car.accelerating(true)
@@ -153,21 +189,30 @@ function keyPressed() {
     car.accelerating(true)
   } else if (keyCode == 32) {
     car.boost();
+    car.accelerationDirection = 'forwards';
+    car.accelerating(true);
   }
 }
 
 function draw() {
   drawGame();
-  let gameOver = isGameOver()
+
+  if (countdownMode) { drawCountdownOverlay() };
+
+  let gameOver = isGameOver();
   if (!gameOver) { updateGame() };
 }
 
 function updateGame() {
-  Engine.update(engine)
-  car.update()
+  Engine.update(engine);
+
+  if (!countdownMode) {
+    car.update();
+    computerCar.update();
+  };
+
   balls.forEach(b => b.update())
 
-  computerCar.update()
   closestBall = findClosestBall(computersBallType);
   if (closestBall) {
     computerCar.pointTowardsBall(closestBall);
