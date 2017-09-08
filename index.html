@@ -27,6 +27,59 @@
         cursor: pointer;
       }
 
+      #start-screen {
+        font-family: arial, sans-serif;
+        text-align: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 99999;
+        background: white;
+      }
+
+      .flexcontainer {
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-direction: column;
+        flex-direction: column;
+        width: 677px;
+        margin: 0 auto;
+        margin-top: 10px;
+      }
+
+      #play {
+        background: #0dba94;
+        color: white;
+        margin-top: 10px;
+        cursor: pointer;
+        font-size: 32px;
+        letter-spacing: 2px;
+        padding: 20px 60px;
+        border: none;
+        border-radius: 5px;
+      }
+
+      div {
+        vertical-align: middle;
+      }
+
+      .row:not(:last-child) {
+        width: 100%;
+        border-bottom: 1px solid lightgrey;
+      }
+
+      .instructions {
+        display: inline-block;
+        margin: 10px 20px;
+        width: 290px;
+      }
+
+      h1 {
+        font-size: 64px;
+        margin: 0;
+        padding: 0;
+      }
+
       @media (max-width: 600px) {
         .replay-button {
           font-size: 16px;
@@ -37,6 +90,30 @@
   </head>
 
   <body>
+    <div id="start-screen">
+      <h1>Car Pool</h1>
+      <div class="flexcontainer">
+        <div class="row">
+          <div class="instructions">Play pool by knocking billiard balls into pockets by hitting them with your car</div>
+          <div class="instructions">
+            <img src="http://res.cloudinary.com/dkw0kkkgd/image/upload/v1504900388/cars_ujet7u.png" height="89" width="148" >
+          </div>
+        </div>
+        <div class="row">
+          <div class="instructions">
+            <img src="http://res.cloudinary.com/dkw0kkkgd/image/upload/v1504900245/poolBalls_c2uw9b.png" height="121">
+          </div>
+          <div class="instructions">Knock in all of the striped balls before the computer knocks in all of the solids</div>
+        </div>
+        <div class="row">
+          <div class="instructions">Use the arrow keys to drive the car and the spacebar to boost</div>
+          <div class="instructions">
+            <img src="http://res.cloudinary.com/dkw0kkkgd/image/upload/v1481315302/Arrow-keys_utpewf.jpg" height="60" width="92">
+          </div>
+        </div>
+      </div>
+      <button id="play">Play</button>
+    </div>
 
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.11/p5.min.js"></script>
     <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.12/addons/p5.dom.min.js"></script>

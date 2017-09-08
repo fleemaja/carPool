@@ -23,6 +23,8 @@ let visibleWallOffset;
 let ballComputerIsFocusedOn;
 let computersBallType = 'solid';
 
+let gameStarted = false;
+
 let replayButton;
 
 let countdownMode = true;
@@ -75,14 +77,19 @@ function setup() {
   computerCar = new Car(isPlayer = false);
   computerCar.accelerating(true);
 
-  setupRackOfBalls();
-
-  updateCountdownOverlay();
-
   replayButton = createButton("Play Again");
   replayButton.addClass('replay-button');
   replayButton.hide();
   replayButton.mousePressed(resetGame);
+
+  const playButton = select('#play');
+  const startScreen = select('#start-screen');
+  playButton.mouseClicked(function() {
+    startScreen.hide();
+    setupRackOfBalls();
+    updateCountdownOverlay();
+    gameStarted = true;
+  });
 }
 
 function collision(event) {
@@ -157,7 +164,7 @@ function rackEmUp() {
   leftWall = new RackWall(centerX, centerY, wallThickness, rackWidth, 0);
   rack.push(topWall); rack.push(bottomWall); rack.push(leftWall);
 
-  for (let i = 1; i <= 9; i++) {
+  for (let i = 1; i <= 15; i++) {
     balls.push(new Ball(i, centerX - xOffset/2, centerY));
   }
 }
@@ -178,31 +185,35 @@ function keyReleased() {
 }
 
 function keyPressed() {
-  if (keyCode == RIGHT_ARROW) {
+  if (keyCode === RIGHT_ARROW) {
     car.rotate(PI/72)
-  } else if (keyCode == LEFT_ARROW) {
+  } else if (keyCode === LEFT_ARROW) {
     car.rotate(-PI/72)
-  } else if (keyCode == UP_ARROW) {
+  } else if (keyCode === UP_ARROW) {
     car.accelerationDirection = 'forwards';
     car.accelerating(true)
-  } else if (keyCode == DOWN_ARROW) {
+  } else if (keyCode === DOWN_ARROW) {
     car.accelerationDirection = 'backwards';
     car.isBoosting = false;
     car.accelerating(true)
-  } else if (keyCode == 32) {
+  } else if (keyCode === 32) {
     car.boost();
     car.accelerationDirection = 'forwards';
     car.accelerating(true);
+  } else if (keyCode === 80) {
+    gameStarted = !gameStarted;
   }
 }
 
 function draw() {
-  drawGame();
+  if (gameStarted) {
+    drawGame();
 
-  if (countdownMode) { drawCountdownOverlay() };
+    if (countdownMode) { drawCountdownOverlay() };
 
-  let gameOver = isGameOver();
-  if (!gameOver) { updateGame() };
+    let gameOver = isGameOver();
+    if (!gameOver) { updateGame() };
+  }
 }
 
 function updateGame() {
