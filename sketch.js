@@ -14,6 +14,7 @@ let computerCar;
 
 let balls = [];
 let walls = [];
+let bumpers = [];
 let rack = [];
 let pockets = [];
 
@@ -65,6 +66,7 @@ function setup() {
   Events.on(engine, 'collisionStart', collision);
 
   addWalls();
+  addBumpers();
   addPockets();
 
   car = new Car(isPlayer = true)
@@ -77,7 +79,7 @@ function setup() {
 
   updateCountdownOverlay();
 
-  replayButton = createButton("Play Again?");
+  replayButton = createButton("Play Again");
   replayButton.addClass('replay-button');
   replayButton.hide();
   replayButton.mousePressed(resetGame);
@@ -120,7 +122,7 @@ function updateCountdownOverlay(msgIdx = 0) {
 function drawCountdownOverlay() {
   push();
   // draw grayed out background
-  fill(0, 155);
+  fill(0, 105);
   rect(0, 0, width, height);
   // text settings
   textAlign(CENTER, CENTER);
@@ -224,7 +226,7 @@ function drawGame() {
   drawPoolTable()
   car.render()
   balls.length > 0 ? balls.forEach(b => b.render()) : setupRackOfBalls();
-  computerCar.render()
+  computerCar.render();
 }
 
 function isGameOver() {
@@ -245,7 +247,7 @@ function gameOver(winner) {
   replayButton.show();
   const winningPlayer = computersBallType === winner ? 'Computer' : 'Player';
   push();
-  fill(0, 155);
+  fill(0, 105);
   rect(0, 0, width, height);
   textAlign(CENTER, CENTER);
   const size = width > 600 ? 32 : 24;
@@ -287,6 +289,7 @@ function distanceBetween(object1, object2) {
 function drawPoolTable() {
   background(COLORS.blueGreen);
   walls.forEach(w => w.render());
+  bumpers.forEach(b => b.render());
   pockets.forEach(p => p.render());
   rack.forEach(r => r.render());
 }
@@ -295,14 +298,32 @@ function addWalls() {
   const wallThickness = 500;
   const wt2 = wallThickness/2;
 
-  bottomWall = new Wall(width/2, height + wt2 - visibleWallOffset, width, wallThickness, 0)
-  topWall = new Wall(width/2, -wt2 + visibleWallOffset, width, wallThickness, 0)
+  bottomWall = new Wall(width/2, height + wt2 - visibleWallOffset, width, wallThickness, 0);
+  topWall = new Wall(width/2, -wt2 + visibleWallOffset, width, wallThickness, 0);
 
-  leftWall = new Wall(-wt2 + visibleWallOffset, height/2, height, wallThickness, PI/2)
-  rightWall = new Wall(width + wt2 - visibleWallOffset, height/2, height, wallThickness, PI/2)
+  leftWall = new Wall(-wt2 + visibleWallOffset, height/2, height, wallThickness, PI/2);
+  rightWall = new Wall(width + wt2 - visibleWallOffset, height/2, height, wallThickness, PI/2);
 
   walls.push(topWall); walls.push(bottomWall);
   walls.push(leftWall); walls.push(rightWall);
+}
+
+function addBumpers() {
+  const bumperThickness = width/108;
+  const adjustedWidth = width - visibleWallOffset*2;
+
+  bottomLeftBumper = new Bumper(adjustedWidth/4 + visibleWallOffset, height - visibleWallOffset, adjustedWidth/2, bumperThickness, 0);
+  bottomRightBumper = new Bumper(3*adjustedWidth/4 + visibleWallOffset, height - visibleWallOffset, adjustedWidth/2, bumperThickness, 0);
+
+  topLeftBumper = new Bumper(adjustedWidth/4 + visibleWallOffset, visibleWallOffset, adjustedWidth/2, bumperThickness, -PI);
+  topRightBumper = new Bumper(3*adjustedWidth/4 + visibleWallOffset, visibleWallOffset, adjustedWidth/2, bumperThickness, -PI);
+
+  leftBumper = new Bumper(visibleWallOffset, height/2, height - visibleWallOffset*2, bumperThickness, PI/2);
+  rightBumper = new Bumper(width - visibleWallOffset, height/2, height - visibleWallOffset*2, bumperThickness, -PI/2);
+
+  walls.push(topLeftBumper); walls.push(topRightBumper);
+  walls.push(bottomLeftBumper); walls.push(bottomRightBumper);
+  bumpers.push(leftBumper); bumpers.push(rightBumper);
 }
 
 function addPockets() {
@@ -315,7 +336,11 @@ function addPockets() {
 
   [leftX, middleX, rightX].forEach((x) => {
     [topY, bottomY].forEach((y) => {
-      pockets.push(new Pocket(x, y, radius));
+      if (x === middleX) {
+        pockets.push(new Pocket(x, y, radius, isMiddle = true));
+      } else {
+        pockets.push(new Pocket(x, y, radius, isMiddle = false));
+      }
     })
   })
 }
