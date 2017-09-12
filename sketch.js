@@ -94,26 +94,33 @@ function setup() {
 }
 
 function collision(event) {
-  var pairs = event.pairs;
+  const pairs = event.pairs;
   for (let i = 0; i < pairs.length; i++) {
     const labelA = pairs[i].bodyA.label;
     const labelB = pairs[i].bodyB.label;
     if (labelA === 'pocket' && labelB === 'ball') {
-      removeBall(pairs[i].bodyB)
+      removeBall(pairs[i].bodyB);
     } else if (labelA === 'ball' && labelB === 'pocket') {
       removeBall(pairs[i].bodyA);
     } else if (labelA === 'eightBall' && labelB === 'car') {
-      eightBallEarthquake = true;
-      setTimeout(function() {
-        eightBallEarthquake = false;
-      }, 1000)
+      eightBallHit(pairs[i].bodyB);
     } else if (labelA === 'car' && labelB === 'eightBall') {
-      eightBallEarthquake = true;
-      setTimeout(function() {
-        eightBallEarthquake = false;
-      }, 1000)
+      eightBallHit(pairs[i].bodyA);
     }
   }
+}
+
+function eightBallHit(carBody) {
+  const playerId = car.body.id;
+  const computerId = computerCar.body.id;
+  if (playerId === carBody.id) {
+    car.eightBallCollision();
+  } else if (computerId === carBody.id) {
+    computerCar.eightBallCollision();
+  }
+
+  eightBallEarthquake = true;
+  setTimeout(function() { eightBallEarthquake = false }, 1000);
 }
 
 function setupRackOfBalls() {

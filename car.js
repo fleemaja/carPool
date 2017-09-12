@@ -14,7 +14,8 @@ class Car {
     this.body = Bodies.rectangle(
       this.position.x, this.position.y, this.length, this.width, options
     )
-    this.body.label = "car";
+    this.body.label = 'car';
+    this.ghost = false;
     this.velocity = createVector(this.body.velocity.x, this.body.velocity.y);
     World.add(world, this.body)
   }
@@ -23,15 +24,21 @@ class Car {
     if (this.isAccelerating) {
       this.accelerate(this.accelerationDirection)
     }
+
     this.rotate(this.rotation)
     this.history.push([this.body.position.x, this.body.position.y]);
     if (this.history.length > exaustClouds) {
       this.history.splice(0, 1);
     }
+
     this.position.x = this.body.position.x;
     this.position.y = this.body.position.y;
     this.velocity.x = this.body.velocity.x;
     this.velocity.y = this.body.velocity.y;
+
+    if (this.ghost) {
+      this.keepInBoundsWhenGhost()
+    }
   }
 
   accelerating(isAccelerating) {
@@ -61,7 +68,6 @@ class Car {
 
   // for computer player. weird way to find correct way to rotate...
   pointTowardsBall(ball) {
-
     const leftVelocity = this.velocity.copy();
     const rightVelocity = this.velocity.copy();
 
@@ -108,43 +114,79 @@ class Car {
     }.bind(this), 1000);
   }
 
+  eightBallCollision() {
+    this.ghost = true;
+    this.body.label = 'ghost';
+    this.body.isSensor = true;
+    setTimeout(function() {
+      this.ghost = false;
+      this.body.label = 'car';
+      this.body.isSensor = false;
+    }.bind(this), 8000)
+  }
+
+  keepInBoundsWhenGhost() {
+    // body is in sensor mode so collisions are no longer happening
+    // need to keep body position within table bounds
+    const visibleWallOffset = width/32;
+    const bumperThickness = width/108;
+    const edgeOffset = visibleWallOffset + bumperThickness + (this.length * 0.5);
+    const xPos = this.body.position.x;
+    const yPos = this.body.position.y;
+    let x = xPos, y = yPos;
+    if (xPos < edgeOffset) {
+      x = edgeOffset + 1;
+    }
+    if (xPos > width - edgeOffset) {
+      x = width - edgeOffset - 1
+    }
+    if (yPos < edgeOffset) {
+      y = edgeOffset + 1
+    }
+    if (yPos > height - edgeOffset) {
+      y = height - edgeOffset - 1
+    }
+    Body.setPosition(this.body, { x, y });
+  }
+
   render() {
     const angle = this.body.angle;
+    const alpha = this.ghost ? 54 : 255;
     push()
     rectMode(CENTER)
     translate(this.body.position.x, this.body.position.y)
-    fill(54);
+    fill(54, alpha);
     noStroke();
     const label = this.isPlayer ? "player" : "computer";
     text(label, -this.width/2, -this.length/2);
     rotate(angle);
-    stroke(0);
+    stroke(0, alpha);
     // tires
-    fill(COLORS.lightBlack)
+    fill(COLORS.lightBlack, alpha)
     ellipse(this.length/3, -this.width/2, this.width/4, this.width/8)
     ellipse(this.length/3, this.width/2, this.width/4, this.width/8)
     ellipse(-this.length/3, -this.width/2, this.width/4, this.width/8)
     ellipse(-this.length/3, this.width/2, this.width/4, this.width/8)
     // car body
-    fill(this.color)
+    fill(this.color, alpha)
     rect(0, 0, this.length, this.width, 5);
-    fill(COLORS.lightBlack);
+    fill(COLORS.lightBlack, alpha);
     rect(-this.length/24, 0, 0.7 * this.length, 0.8 * this.width, 5);
-    fill(this.color);
+    fill(this.color, alpha);
     rect(-this.length/12, 0, 0.45 * this.length, 0.6 * this.width, 5);
     // headlights
-    fill(255, 255, 200);
+    fill(255, 255, 200, alpha);
     ellipse(this.length * 0.45, -this.width/3, this.width/8, this.width/4);
     ellipse(this.length * 0.45, this.width/3, this.width/8, this.width/4);
     const reversing = this.accelerationDirection === 'backwards' &&  this.isAccelerating;
     // bright lights on the back of car when reversing
-    reversing ? fill(COLORS.red) : fill(COLORS.dimRed);
+    reversing ? fill(...COLORS.red, alpha) : fill(...COLORS.dimRed, alpha);
     noStroke();
     ellipse(-this.length * 0.45, -this.width/3, this.width/8, this.width/8);
     ellipse(-this.length * 0.45, this.width/3, this.width/8, this.width/8);
     // if boosting draw flames
     if (this.isBoosting) {
-      fill(255, random(0, 255), 0);
+      fill(255, random(0, 255), 0, alpha);
       // x1, y1, x2, y2, x3, y3
       triangle(-this.length*0.5, -this.width/8, -this.length*0.5, this.width/8, -this.length, random(-this.width*0.15, this.width*0.15))
     }
