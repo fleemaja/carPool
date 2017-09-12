@@ -1,6 +1,6 @@
 class Ball {
   constructor(number, x, y) {
-    this.position = createVector(x + random(-5, 5), y + random(-1, 1))
+    this.position = createVector(x + random(-3, 3), y + random(-3, 3))
     this.radius = width/32
     this.number = number
     const options = {
@@ -11,7 +11,7 @@ class Ball {
     this.body = Bodies.circle(
       this.position.x, this.position.y, this.radius/2, options
     )
-    this.body.label = "ball";
+    this.number !== 8 ? this.body.label = "ball" : this.body.label = "eightBall";
     this.id = this.body.id;
     World.add(world, this.body)
   }
@@ -51,21 +51,21 @@ class Ball {
 
   displaySolidBall(number) {
     switch (number) {
-      case 1: this.drawSolid(number, COLORS.yellow); break;
-      case 2: this.drawSolid(number, COLORS.blue); break;
-      case 3: this.drawSolid(number, COLORS.red); break;
-      case 4: this.drawSolid(number, COLORS.purple); break;
-      case 5: this.drawSolid(number, COLORS.orange); break;
-      case 6: this.drawSolid(number, COLORS.green); break;
-      case 7: this.drawSolid(number, COLORS.maroon); break;
-      case 8: this.drawSolid(number, COLORS.black); break;
+      case 1 : this.drawSolid(number, COLORS.yellow); break;
+      case 2 : this.drawSolid(number, COLORS.blue); break;
+      case 3 : this.drawSolid(number, COLORS.red); break;
+      case 4 : this.drawSolid(number, COLORS.purple); break;
+      case 5 : this.drawSolid(number, COLORS.orange); break;
+      case 6 : this.drawSolid(number, COLORS.green); break;
+      case 7 : this.drawSolid(number, COLORS.maroon); break;
+      case 8 : this.drawSolid(number, COLORS.black); break;
       default: break;
     }
   }
 
   displayStripedBall(number) {
     switch (number) {
-      case 9: this.drawStripe(number, COLORS.yellow); break;
+      case 9 : this.drawStripe(number, COLORS.yellow); break;
       case 10: this.drawStripe(number, COLORS.blue); break;
       case 11: this.drawStripe(number, COLORS.red); break;
       case 12: this.drawStripe(number, COLORS.purple); break;

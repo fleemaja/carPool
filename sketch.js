@@ -29,6 +29,7 @@ let replayButton;
 
 let countdownMode = true;
 let countdownText;
+let eightBallEarthquake = false;
 
 function resetGame() {
   replayButton.hide();
@@ -97,20 +98,27 @@ function collision(event) {
   for (let i = 0; i < pairs.length; i++) {
     const labelA = pairs[i].bodyA.label;
     const labelB = pairs[i].bodyB.label;
-    if (labelA == 'pocket' && labelB == 'ball') {
+    if (labelA === 'pocket' && labelB === 'ball') {
       removeBall(pairs[i].bodyB)
-    } else if (labelA == 'ball' && labelB == 'pocket') {
+    } else if (labelA === 'ball' && labelB === 'pocket') {
       removeBall(pairs[i].bodyA);
+    } else if (labelA === 'eightBall' && labelB === 'car') {
+      eightBallEarthquake = true;
+      setTimeout(function() {
+        eightBallEarthquake = false;
+      }, 1000)
+    } else if (labelA === 'car' && labelB === 'eightBall') {
+      eightBallEarthquake = true;
+      setTimeout(function() {
+        eightBallEarthquake = false;
+      }, 1000)
     }
   }
 }
 
 function setupRackOfBalls() {
   rackEmUp();
-
-  setTimeout(function() {
-    removeRack();
-  }, 1000);
+  setTimeout(removeRack, 1000);
 }
 
 function updateCountdownOverlay(msgIdx = 0) {
@@ -206,6 +214,11 @@ function keyPressed() {
 }
 
 function draw() {
+
+  if (eightBallEarthquake) {
+    translate(random(-10, 10), random(-10, 10))
+  }
+
   if (gameStarted) {
     drawGame();
 
