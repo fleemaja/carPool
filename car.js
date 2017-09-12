@@ -36,9 +36,7 @@ class Car {
     this.velocity.x = this.body.velocity.x;
     this.velocity.y = this.body.velocity.y;
 
-    if (this.ghost) {
-      this.keepInBoundsWhenGhost()
-    }
+    this.keepInBounds()
   }
 
   accelerating(isAccelerating) {
@@ -125,12 +123,13 @@ class Car {
     }.bind(this), 8000)
   }
 
-  keepInBoundsWhenGhost() {
-    // body is in sensor mode so collisions are no longer happening
+  keepInBounds() {
+    // body is in sensor mode when in 8 ball punishment state
+    // so collisions are no longer happening
     // need to keep body position within table bounds
     const visibleWallOffset = width/32;
     const bumperThickness = width/108;
-    const edgeOffset = visibleWallOffset + bumperThickness + (this.length * 0.5);
+    const edgeOffset = visibleWallOffset + bumperThickness;
     const xPos = this.body.position.x;
     const yPos = this.body.position.y;
     let x = xPos, y = yPos;

@@ -106,8 +106,45 @@ function collision(event) {
       eightBallHit(pairs[i].bodyB);
     } else if (labelA === 'car' && labelB === 'eightBall') {
       eightBallHit(pairs[i].bodyA);
+    } else if (labelA === 'ball' && labelB === 'wall') {
+      // matterjs BUG: ball has gone through bumper
+      resetBallPosition(pairs[i].bodyA);
+    } else if (labelA === 'wall' && labelB === 'ball') {
+      // matterjs BUG: ball has gone through bumper
+      resetBallPosition(pairs[i].bodyB);
     }
   }
+}
+
+function resetBallPosition(ballBody) {
+  const ballId = ballBody.id;
+  const matches = balls.filter(b => b.body.id === ballId);
+  const ball = matches.length > 0 ? matches[0] : null;
+  if (ball) {
+    setBallBackInBounds(ball);
+  }
+}
+
+function setBallBackInBounds(ball) {
+  const visibleWallOffset = width/32;
+  const bumperThickness = width/108;
+  const edgeOffset = visibleWallOffset + bumperThickness;
+  const xPos = ball.body.position.x;
+  const yPos = ball.body.position.y;
+  let x = xPos, y = yPos;
+  if (xPos < edgeOffset) {
+    x = edgeOffset + 1;
+  }
+  if (xPos > width - edgeOffset) {
+    x = width - edgeOffset - 1
+  }
+  if (yPos < edgeOffset) {
+    y = edgeOffset + 1
+  }
+  if (yPos > height - edgeOffset) {
+    y = height - edgeOffset - 1
+  }
+  Body.setPosition(ball.body, { x, y });
 }
 
 function eightBallHit(carBody) {
