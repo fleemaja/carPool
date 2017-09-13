@@ -1,6 +1,6 @@
 class Ball {
   constructor(number, x, y) {
-    this.position = createVector(x + random(-3, 3), y + random(-3, 3))
+    this.position = createVector(x, y)
     this.radius = width/32
     this.number = number
     const options = {

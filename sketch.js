@@ -15,7 +15,6 @@ let computerCar;
 let balls = [];
 let walls = [];
 let bumpers = [];
-let rack = [];
 let pockets = [];
 
 let visibleWallOffset;
@@ -106,10 +105,12 @@ function collision(event) {
       eightBallHit(pairs[i].bodyB);
     } else if (labelA === 'car' && labelB === 'eightBall') {
       eightBallHit(pairs[i].bodyA);
-    } else if (labelA === 'ball' && labelB === 'wall') {
+    } else if ((labelA === 'ball' || labelA === 'eightBall') &&
+                labelB === 'wall') {
       // matterjs BUG: ball has gone through bumper
       resetBallPosition(pairs[i].bodyA);
-    } else if (labelA === 'wall' && labelB === 'ball') {
+    } else if ((labelB === 'ball' || labelB === 'eightBall') &&
+                labelA === 'wall') {
       // matterjs BUG: ball has gone through bumper
       resetBallPosition(pairs[i].bodyB);
     }
@@ -160,11 +161,6 @@ function eightBallHit(carBody) {
   setTimeout(function() { eightBallEarthquake = false }, 1000);
 }
 
-function setupRackOfBalls() {
-  rackEmUp();
-  setTimeout(removeRack, 1000);
-}
-
 function updateCountdownOverlay(msgIdx = 0) {
   let msgs = ['3', '2', '1', 'GO!'];
   countdownText = msgs[msgIdx];
@@ -204,27 +200,49 @@ function removeBall(body) {
   }
 }
 
-function rackEmUp() {
-  const wallThickness = width/48;
-  const rackWidth = 0.45 * height;
-  const centerX = 0.75 * width;
-  const centerY = 0.5 * height;
-  const xOffset = 0.866 * rackWidth/2;
-
-  topWall = new RackWall(centerX - xOffset, centerY - rackWidth/4, wallThickness, rackWidth, PI/3);
-  bottomWall = new RackWall(centerX - xOffset, centerY + rackWidth/4, wallThickness, rackWidth, -PI/3);
-  leftWall = new RackWall(centerX, centerY, wallThickness, rackWidth, 0);
-  rack.push(topWall); rack.push(bottomWall); rack.push(leftWall);
-
-  for (let i = 1; i <= 15; i++) {
-    balls.push(new Ball(i, centerX - xOffset/2, centerY));
-  }
+// helper method to shuffle ball order
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
-function removeRack() {
-  for (let i = rack.length - 1; i >= 0; i--) {
-    World.remove(world, rack[i].body);
-    rack.splice(i, 1);
+function getRandomizedBallOrderArray() {
+  let solidBalls = [1, 2, 3, 4, 5, 6, 7];
+  let stripedBalls = [9, 10, 11, 12, 13, 14, 15];
+  // eight ball in the back middle. everything else is random.
+  let nonEightBalls = solidBalls.concat(stripedBalls);
+
+  shuffleArray(nonEightBalls);
+
+  let firstTwelve = nonEightBalls.slice(0, 12);
+  let firstThirteen = firstTwelve.concat(8);
+  let lastTwo = nonEightBalls.slice(12, 14);
+  const randomizedBallOrderArray = firstThirteen.concat(lastTwo);
+  return randomizedBallOrderArray;
+}
+
+function setupRackOfBalls() {
+  const centerX = 0.68 * width;
+  const centerY = 0.5 * height;
+  const ballDiameter = width/32;
+  const ballNums = getRandomizedBallOrderArray();
+
+  let row = 1;
+  let y = centerY;
+  let x = centerX + ballDiameter;
+  balls.push(new Ball(ballNums[0], x, y));
+  for (let i = 1; i <= 14; i++) {
+    if ([1, 3, 6, 10].indexOf(i) > -1) {
+      row++;
+      x += ballDiameter;
+      y = centerY - ((row - 1) * ballDiameter * 0.5)
+    } else {
+      y += ballDiameter;
+    }
+    balls.push(new Ball(ballNums[i], x, y));
   }
 }
 
@@ -359,7 +377,6 @@ function drawPoolTable() {
   walls.forEach(w => w.render());
   bumpers.forEach(b => b.render());
   pockets.forEach(p => p.render());
-  rack.forEach(r => r.render());
 }
 
 function addWalls() {
