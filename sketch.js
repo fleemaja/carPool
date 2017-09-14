@@ -406,9 +406,9 @@ function addBumpers() {
   leftBumper = new Bumper(visibleWallOffset, height/2, height - visibleWallOffset*2, bumperThickness, PI/2);
   rightBumper = new Bumper(width - visibleWallOffset, height/2, height - visibleWallOffset*2, bumperThickness, -PI/2);
 
-  walls.push(topLeftBumper); walls.push(topRightBumper);
-  walls.push(bottomLeftBumper); walls.push(bottomRightBumper);
+  bumpers.push(topLeftBumper); bumpers.push(topRightBumper);
   bumpers.push(leftBumper); bumpers.push(rightBumper);
+  bumpers.push(bottomLeftBumper); bumpers.push(bottomRightBumper);
 }
 
 function addPockets() {
